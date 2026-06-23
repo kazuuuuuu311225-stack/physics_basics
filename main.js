@@ -82,10 +82,54 @@ const mission3 = [
     choices: ['F を2倍にする', 'm を2倍にする', 'F を半分にする', 'm を増やす'], answer: 0 },
 ];
 
+const mission4 = [
+  { id: 31,
+    question: '質量 m = 5 kg の物体に加速度 a = 3 m/s² が生じた。力 F はいくらか？（F = ma）',
+    choices: ['8 N', '12 N', '15 N', '20 N'], answer: 2,
+    explanation: 'F = ma\nm = 5, a = 3 を代入 → F = 5 × 3 = 15 N' },
+  { id: 32,
+    question: '重力加速度 g = 9.8 m/s²、質量 m = 2 kg の物体の重力 W は？（W = mg）',
+    choices: ['9.8 N', '14 N', '19.6 N', '25 N'], answer: 2,
+    explanation: 'W = mg\nm = 2, g = 9.8 → W = 2 × 9.8 = 19.6 N' },
+  { id: 33,
+    question: '力 F = 40 N が面積 S = 2 m² に働くとき、圧力 p は？（p = F/S）',
+    choices: ['10 Pa', '20 Pa', '40 Pa', '80 Pa'], answer: 1,
+    explanation: 'p = F/S\nF = 40, S = 2 → p = 40 / 2 = 20 Pa' },
+  { id: 34,
+    question: 'ばね定数 k = 50 N/m のばねを x = 0.2 m 伸ばしたときの弾性力 F は？（F = kx）',
+    choices: ['5 N', '8 N', '10 N', '12 N'], answer: 2,
+    explanation: 'F = kx\nk = 50, x = 0.2 → F = 50 × 0.2 = 10 N' },
+  { id: 35,
+    question: '摩擦係数 μ = 0.3、垂直抗力 N = 100 N のとき、摩擦力 F は？（F = μN）',
+    choices: ['20 N', '25 N', '30 N', '35 N'], answer: 2,
+    explanation: 'F = μN\nμ = 0.3, N = 100 → F = 0.3 × 100 = 30 N' },
+  { id: 36,
+    question: '密度 ρ = 1000 kg/m³、体積 V = 0.01 m³ の水が押しのけられた。浮力 F は？（F = ρVg, g = 9.8）',
+    choices: ['49 N', '78 N', '98 N', '120 N'], answer: 2,
+    explanation: 'F = ρVg\nρ = 1000, V = 0.01, g = 9.8\nF = 1000 × 0.01 × 9.8 = 98 N' },
+  { id: 37,
+    question: '水深 h = 5 m、密度 ρ = 1000 kg/m³、g = 9.8 のとき水圧 p は？（p = ρgh）',
+    choices: ['9800 Pa', '24,500 Pa', '49,000 Pa', '98,000 Pa'], answer: 2,
+    explanation: 'p = ρgh\nρ = 1000, g = 9.8, h = 5\np = 1000 × 9.8 × 5 = 49,000 Pa' },
+  { id: 38,
+    question: '速度 v = 20 m/s の物体が t = 4 s で止まった。加速度 a は？（a = Δv / t）',
+    choices: ['-2 m/s²', '-4 m/s²', '-5 m/s²', '-10 m/s²'], answer: 2,
+    explanation: 'a = Δv / t\nΔv = 0 - 20 = -20\n-20 / 4 = -5 m/s²' },
+  { id: 39,
+    question: '質量 m = 10 kg の物体に F = 50 N の力が働く。加速度 a は？（a = F/m）',
+    choices: ['2 m/s²', '3 m/s²', '4 m/s²', '5 m/s²'], answer: 3,
+    explanation: 'a = F/m\nF = 50, m = 10 → a = 50 / 10 = 5 m/s²' },
+  { id: 40,
+    question: 'ばね定数 k = 80 N/m のばねを x = 0.05 m 伸ばした。弾性力 F は？（F = kx）',
+    choices: ['2 N', '3 N', '4 N', '5 N'], answer: 2,
+    explanation: 'F = kx\nk = 80, x = 0.05 → F = 80 × 0.05 = 4 N' },
+];
+
 const MISSIONS = {
   1: { title: 'MISSION 1', subtitle: '基礎公式', questions: mission1 },
   2: { title: 'MISSION 2', subtitle: '流体・浮力', questions: mission2 },
   3: { title: 'MISSION 3', subtitle: '運動の三法則', questions: mission3 },
+  4: { title: 'MISSION 4', subtitle: '計算問題', questions: mission4 },
 };
 
 const CHOICE_LABELS = ['A', 'B', 'C', 'D'];
@@ -130,6 +174,7 @@ function initApp() {
     resultIcon: document.getElementById('resultIcon'),
     resultLabel: document.getElementById('resultLabel'),
     resultDetail: document.getElementById('resultDetail'),
+    explanationText: document.getElementById('explanationText'),
     btnNext: document.getElementById('btnNext'),
     scoreMissionTitle: document.getElementById('scoreMissionTitle'),
     scoreValue: document.getElementById('scoreValue'),
@@ -140,6 +185,8 @@ function initApp() {
     btnBackResult: document.getElementById('btnBackResult'),
     btnForwardQuiz: document.getElementById('btnForwardQuiz'),
     hintReview: document.getElementById('hintReview'),
+    hintForwardKeyboard: document.getElementById('hintForwardKeyboard'),
+    hintForwardTouch: document.getElementById('hintForwardTouch'),
     hintQuizKeyboard: document.getElementById('hintQuizKeyboard'),
     hintQuizTouch: document.getElementById('hintQuizTouch'),
   };
@@ -194,7 +241,7 @@ function handleMissionClick(event) {
 }
 
 function moveMissionSelection(delta) {
-  var count = 3;
+  var count = Object.keys(MISSIONS).length;
   state.missionSelection = (state.missionSelection + delta + count) % count;
   updateMissionHighlight();
 }
@@ -215,20 +262,22 @@ function shuffleChoices(choices, correctIndex) {
   };
 }
 
-function buildShuffledMap(questions) {
-  return questions.map(function (q) {
-    return shuffleChoices(q.choices, q.answer);
-  });
+function getShuffledFor(index) {
+  if (!state.shuffledMap[index]) {
+    var q = state.questions[index];
+    state.shuffledMap[index] = shuffleChoices(q.choices, q.answer);
+  }
+  return state.shuffledMap[index];
 }
 
 function getCurrentShuffled() {
-  return state.shuffledMap[state.currentIndex];
+  return getShuffledFor(state.currentIndex);
 }
 
 function startMission(id) {
   state.missionId = id;
   state.questions = MISSIONS[id].questions;
-  state.shuffledMap = buildShuffledMap(state.questions);
+  state.shuffledMap = state.questions.map(function () { return null; });
   state.answers = state.questions.map(function () { return null; });
   state.reviewMode = false;
   state.resumeIndex = 0;
@@ -250,7 +299,7 @@ function isCurrentReview() {
 function recordAnswer(index, selection) {
   if (isQuestionAnswered(index)) return;
 
-  var shuffled = state.shuffledMap[index];
+  var shuffled = getShuffledFor(index);
   state.answers[index] = selection;
 
   if (selection === shuffled.answer) {
@@ -284,6 +333,11 @@ function updateNavButtons() {
   if (elements.hintReview) {
     elements.hintReview.classList.toggle('hidden', !isCurrentReview());
   }
+
+  [elements.hintForwardKeyboard, elements.hintForwardTouch].forEach(function (el) {
+    if (!el) return;
+    el.classList.toggle('hidden', !canForward);
+  });
 
   if (elements.hintQuizKeyboard) {
     elements.hintQuizKeyboard.classList.toggle('hidden', isCurrentReview());
@@ -330,7 +384,7 @@ function goForwardQuestion() {
   state.currentIndex = state.resumeIndex;
 
   if (isQuestionAnswered(state.currentIndex)) {
-    var shuffled = state.shuffledMap[state.currentIndex];
+    var shuffled = getShuffledFor(state.currentIndex);
     renderResult(state.answers[state.currentIndex] === shuffled.answer);
     showScreen('result');
     updateNavButtons();
@@ -444,6 +498,7 @@ function answerQuestion() {
 }
 
 function renderResult(isCorrect) {
+  var q = state.questions[state.currentIndex];
   var shuffled = getCurrentShuffled();
   var correctLabel = CHOICE_LABELS[shuffled.answer];
   var correctText = shuffled.choices[shuffled.answer];
@@ -462,6 +517,16 @@ function renderResult(isCorrect) {
     elements.resultDetail.innerHTML =
       '<span class="text-incorrect">あなたの回答: ' + chosen + '. ' + escapeHtml(chosenText) + '</span>' +
       '<br><span class="text-correct">正解: ' + correctLabel + '. ' + escapeHtml(correctText) + '</span>';
+  }
+
+  if (elements.explanationText) {
+    if (q.explanation) {
+      elements.explanationText.innerHTML = formatExplanation(q.explanation);
+      elements.explanationText.classList.remove('hidden');
+    } else {
+      elements.explanationText.textContent = '';
+      elements.explanationText.classList.add('hidden');
+    }
   }
 
   var isLast = state.currentIndex + 1 >= state.questions.length;
@@ -521,8 +586,12 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
+function formatExplanation(text) {
+  return escapeHtml(text).replace(/\n/g, '<br>');
+}
+
 function handleKeydown(event) {
-  if (['ArrowUp', 'ArrowDown', 'Enter', 'Escape', 'Backspace'].includes(event.key)) {
+  if (['ArrowUp', 'ArrowDown', 'Enter', 'Escape', 'Backspace', 'ArrowRight'].includes(event.key)) {
     event.preventDefault();
   }
 
@@ -533,8 +602,12 @@ function handleKeydown(event) {
       else if (event.key === 'Enter') startMission(state.missionSelection + 1);
       break;
     case 'quiz':
-      if (event.key === 'Escape' || event.key === 'Backspace') goPreviousQuestion();
-      else if (!isCurrentReview() && !isQuestionAnswered(state.currentIndex)) {
+      if (isCurrentReview()) {
+        if (event.key === 'Enter' || event.key === 'ArrowRight') goForwardQuestion();
+        else if (event.key === 'Escape' || event.key === 'Backspace') goPreviousQuestion();
+      } else if (event.key === 'Escape' || event.key === 'Backspace') {
+        goPreviousQuestion();
+      } else if (!isQuestionAnswered(state.currentIndex)) {
         if (event.key === 'ArrowUp') moveSelection(-1);
         else if (event.key === 'ArrowDown') moveSelection(1);
         else if (event.key === 'Enter') answerQuestion();

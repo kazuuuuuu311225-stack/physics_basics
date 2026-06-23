@@ -39,6 +39,11 @@
             <span class="mission-label">MISSION 3</span>
             <span class="mission-desc">運動の三法則</span>
           </li>
+          <li class="mission-item" data-mission="4">
+            <span class="mission-cursor">▶</span>
+            <span class="mission-label">MISSION 4</span>
+            <span class="mission-desc">計算問題</span>
+          </li>
         </ul>
         <p class="hint hint-keyboard">↑↓ で選択　Enter で開始</p>
         <p class="hint hint-touch">ミッションをタップして開始</p>
@@ -58,10 +63,10 @@
         </div>
         <p class="question-text" id="questionText"></p>
         <ul class="choices-list" id="choicesList"></ul>
-        <div class="quiz-nav">
-          <button type="button" class="btn-back hidden" id="btnForwardQuiz">進む →</button>
-        </div>
+        <button type="button" class="btn-primary btn-forward hidden" id="btnForwardQuiz">次に進む</button>
         <p class="hint hint-review hidden" id="hintReview">閲覧のみ（やり直し不可）</p>
+        <p class="hint hint-forward hint-keyboard hidden" id="hintForwardKeyboard">Enter で次に進む</p>
+        <p class="hint hint-forward hint-touch hidden" id="hintForwardTouch">「次に進む」をタップ</p>
         <p class="hint hint-keyboard" id="hintQuizKeyboard">↑↓ で選択　Enter で決定　Esc で前の問題</p>
         <p class="hint hint-touch" id="hintQuizTouch">選択肢をタップ</p>
       </div>
@@ -73,6 +78,7 @@
         <div class="result-icon" id="resultIcon">✓</div>
         <p class="result-label" id="resultLabel">正解！</p>
         <p class="result-detail" id="resultDetail"></p>
+        <p class="explanation-text hidden" id="explanationText"></p>
         <button type="button" class="btn-back" id="btnBackResult">← 戻る</button>
         <button type="button" class="btn-primary" id="btnNext">次の問題へ</button>
         <p class="hint hint-keyboard">Enter で次へ　Esc で前の問題</p>

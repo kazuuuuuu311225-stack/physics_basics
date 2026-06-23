@@ -382,7 +382,17 @@ body {
   display: none;
 }
 
-.hint-review.hidden {
+.btn-forward {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.btn-forward.hidden {
+  display: none;
+}
+
+.hint-review.hidden,
+.hint-forward.hidden {
   display: none;
 }
 
@@ -490,7 +500,22 @@ body {
   font-size: 0.95rem;
   color: var(--text-secondary);
   line-height: 1.7;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.explanation-text {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.45);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.7;
+  text-align: left;
+}
+
+.explanation-text.hidden {
+  display: none;
 }
 
 /* スコア画面 */
