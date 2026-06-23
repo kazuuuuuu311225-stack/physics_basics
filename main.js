@@ -193,9 +193,7 @@ function initApp() {
 
   document.addEventListener('keydown', handleKeydown);
 
-  elements.missionList.querySelectorAll('.mission-item').forEach(function (item) {
-    item.addEventListener('click', handleMissionClick);
-  });
+  renderMissionList();
 
   elements.btnNext.addEventListener('click', nextQuestion);
   elements.btnRetry.addEventListener('click', retryMission);
@@ -216,6 +214,26 @@ function showScreen(name) {
   state.screen = name;
 }
 
+function renderMissionList() {
+  var html = Object.keys(MISSIONS).map(function (key, i) {
+    var mission = MISSIONS[key];
+    var selected = i === state.missionSelection ? ' selected' : '';
+    return (
+      '<li class="mission-item' + selected + '" data-mission="' + key + '">' +
+      '<span class="mission-cursor">▶</span>' +
+      '<span class="mission-label">' + mission.title + '</span>' +
+      '<span class="mission-desc">' + mission.subtitle + '</span>' +
+      '</li>'
+    );
+  }).join('');
+
+  elements.missionList.innerHTML = html;
+
+  elements.missionList.querySelectorAll('.mission-item').forEach(function (item) {
+    item.addEventListener('click', handleMissionClick);
+  });
+}
+
 function getMissionItems() {
   return elements.missionList.querySelectorAll('.mission-item');
 }
@@ -229,15 +247,11 @@ function updateMissionHighlight() {
 function handleMissionClick(event) {
   var item = event.currentTarget;
   var id = parseInt(item.getAttribute('data-mission'), 10);
-  var index = id - 1;
+  if (isNaN(id) || !MISSIONS[id]) return;
 
-  if (state.missionSelection === index) {
-    startMission(id);
-    return;
-  }
-
-  state.missionSelection = index;
+  state.missionSelection = id - 1;
   updateMissionHighlight();
+  startMission(id);
 }
 
 function moveMissionSelection(delta) {
@@ -275,6 +289,8 @@ function getCurrentShuffled() {
 }
 
 function startMission(id) {
+  if (!MISSIONS[id]) return;
+
   state.missionId = id;
   state.questions = MISSIONS[id].questions;
   state.shuffledMap = state.questions.map(function () { return null; });
@@ -574,7 +590,7 @@ function retryMission() {
 
 function goHome() {
   state.missionSelection = state.missionId - 1;
-  updateMissionHighlight();
+  renderMissionList();
   showScreen('mission');
 }
 
