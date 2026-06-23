@@ -100,6 +100,9 @@ const state = {
   lastAnswer: null,
   questions: [],
   shuffledMap: [],
+  answers: [],
+  reviewMode: false,
+  resumeIndex: 0,
 };
 
 let screens;
@@ -134,6 +137,11 @@ function initApp() {
     btnRetry: document.getElementById('btnRetry'),
     btnHome: document.getElementById('btnHome'),
     btnBackQuiz: document.getElementById('btnBackQuiz'),
+    btnBackResult: document.getElementById('btnBackResult'),
+    btnForwardQuiz: document.getElementById('btnForwardQuiz'),
+    hintReview: document.getElementById('hintReview'),
+    hintQuizKeyboard: document.getElementById('hintQuizKeyboard'),
+    hintQuizTouch: document.getElementById('hintQuizTouch'),
   };
 
   document.addEventListener('keydown', handleKeydown);
@@ -145,7 +153,9 @@ function initApp() {
   elements.btnNext.addEventListener('click', nextQuestion);
   elements.btnRetry.addEventListener('click', retryMission);
   elements.btnHome.addEventListener('click', goHome);
-  elements.btnBackQuiz.addEventListener('click', goHome);
+  elements.btnBackQuiz.addEventListener('click', goPreviousQuestion);
+  elements.btnBackResult.addEventListener('click', goPreviousQuestion);
+  elements.btnForwardQuiz.addEventListener('click', goForwardQuestion);
 
   document.body.focus();
   showScreen('mission');
@@ -219,11 +229,131 @@ function startMission(id) {
   state.missionId = id;
   state.questions = MISSIONS[id].questions;
   state.shuffledMap = buildShuffledMap(state.questions);
+  state.answers = state.questions.map(function () { return null; });
+  state.reviewMode = false;
+  state.resumeIndex = 0;
   state.currentIndex = 0;
   state.currentSelection = 0;
   state.score = 0;
   showScreen('quiz');
   renderQuiz();
+}
+
+function isQuestionAnswered(index) {
+  return state.answers[index] !== null;
+}
+
+function isCurrentReview() {
+  return state.reviewMode && isQuestionAnswered(state.currentIndex);
+}
+
+function recordAnswer(index, selection) {
+  if (isQuestionAnswered(index)) return;
+
+  var shuffled = state.shuffledMap[index];
+  state.answers[index] = selection;
+
+  if (selection === shuffled.answer) {
+    state.score += 1;
+  }
+}
+
+function updateNavButtons() {
+  var canBack = false;
+
+  if (state.screen === 'quiz') {
+    canBack = state.currentIndex > 0;
+  } else if (state.screen === 'result') {
+    canBack = state.currentIndex > 0;
+  }
+
+  var canForward = state.screen === 'quiz' &&
+    state.reviewMode &&
+    state.currentIndex < state.resumeIndex;
+
+  [elements.btnBackQuiz, elements.btnBackResult].forEach(function (btn) {
+    if (!btn) return;
+    btn.disabled = !canBack;
+    btn.classList.toggle('disabled', !canBack);
+  });
+
+  if (elements.btnForwardQuiz) {
+    elements.btnForwardQuiz.classList.toggle('hidden', !canForward);
+  }
+
+  if (elements.hintReview) {
+    elements.hintReview.classList.toggle('hidden', !isCurrentReview());
+  }
+
+  if (elements.hintQuizKeyboard) {
+    elements.hintQuizKeyboard.classList.toggle('hidden', isCurrentReview());
+  }
+
+  if (elements.hintQuizTouch) {
+    elements.hintQuizTouch.classList.toggle('hidden', isCurrentReview());
+  }
+}
+
+function goPreviousQuestion() {
+  if (state.screen !== 'quiz' && state.screen !== 'result') return;
+
+  if (state.currentIndex <= 0) return;
+
+  if (state.screen === 'result') {
+    state.resumeIndex = state.currentIndex;
+    state.reviewMode = true;
+    state.currentIndex -= 1;
+    showScreen('quiz');
+    renderQuiz();
+    return;
+  }
+
+  if (!state.reviewMode) {
+    state.resumeIndex = state.currentIndex;
+  }
+
+  state.reviewMode = true;
+  state.currentIndex -= 1;
+  renderQuiz();
+}
+
+function goForwardQuestion() {
+  if (!state.reviewMode) return;
+
+  if (state.currentIndex < state.resumeIndex - 1) {
+    state.currentIndex += 1;
+    renderQuiz();
+    return;
+  }
+
+  state.reviewMode = false;
+  state.currentIndex = state.resumeIndex;
+
+  if (isQuestionAnswered(state.currentIndex)) {
+    var shuffled = state.shuffledMap[state.currentIndex];
+    renderResult(state.answers[state.currentIndex] === shuffled.answer);
+    showScreen('result');
+    updateNavButtons();
+    return;
+  }
+
+  state.currentSelection = 0;
+  renderQuiz();
+}
+
+function getChoiceClass(index, shuffled, userAnswer) {
+  if (userAnswer === null) return '';
+
+  if (index === userAnswer && index === shuffled.answer) {
+    return ' choice-correct';
+  }
+  if (index === userAnswer) {
+    return ' choice-incorrect';
+  }
+  if (index === shuffled.answer) {
+    return ' choice-correct';
+  }
+  return ' is-locked';
 }
 
 function renderQuiz() {
@@ -232,6 +362,8 @@ function renderQuiz() {
   var shuffled = getCurrentShuffled();
   var total = state.questions.length;
   var current = state.currentIndex + 1;
+  var userAnswer = state.answers[state.currentIndex];
+  var isReview = isCurrentReview();
 
   elements.missionBadge.textContent = mission.title;
   elements.progressText.textContent = current + ' / ' + total;
@@ -239,9 +371,16 @@ function renderQuiz() {
   elements.questionText.textContent = q.question;
 
   var html = shuffled.choices.map(function (choice, i) {
-    var selected = i === state.currentSelection ? ' selected' : '';
+    var classes = 'choice-item';
+
+    if (isReview) {
+      classes += getChoiceClass(i, shuffled, userAnswer);
+    } else if (i === state.currentSelection) {
+      classes += ' selected';
+    }
+
     return (
-      '<li class="choice-item' + selected + '" data-index="' + i + '">' +
+      '<li class="' + classes + '" data-index="' + i + '">' +
       '<span class="choice-cursor">▶</span>' +
       '<span class="choice-label">' + CHOICE_LABELS[i] + '.</span>' +
       '<span class="choice-text">' + escapeHtml(choice) + '</span>' +
@@ -251,13 +390,18 @@ function renderQuiz() {
 
   elements.choicesList.innerHTML = html;
 
-  elements.choicesList.querySelectorAll('.choice-item').forEach(function (item) {
-    item.addEventListener('click', handleChoiceClick);
-  });
+  if (!isReview) {
+    elements.choicesList.querySelectorAll('.choice-item').forEach(function (item) {
+      item.addEventListener('click', handleChoiceClick);
+    });
+  }
+
+  updateNavButtons();
 }
 
 function handleChoiceClick(event) {
-  if (state.screen !== 'quiz') return;
+  if (state.screen !== 'quiz' || isCurrentReview()) return;
+  if (isQuestionAnswered(state.currentIndex)) return;
 
   var index = parseInt(event.currentTarget.getAttribute('data-index'), 10);
   if (isNaN(index)) return;
@@ -278,6 +422,7 @@ function updateChoiceHighlight() {
 }
 
 function moveSelection(delta) {
+  if (isCurrentReview() || isQuestionAnswered(state.currentIndex)) return;
   var count = getCurrentShuffled().choices.length;
   state.currentSelection = (state.currentSelection + delta + count) % count;
   updateChoiceHighlight();
@@ -285,15 +430,17 @@ function moveSelection(delta) {
 
 function answerQuestion() {
   if (state.screen !== 'quiz') return;
+  if (isCurrentReview() || isQuestionAnswered(state.currentIndex)) return;
 
   var shuffled = getCurrentShuffled();
+  recordAnswer(state.currentIndex, state.currentSelection);
   state.lastAnswer = state.currentSelection;
   var isCorrect = state.currentSelection === shuffled.answer;
 
-  if (isCorrect) state.score += 1;
-
   renderResult(isCorrect);
+  state.reviewMode = false;
   showScreen('result');
+  updateNavButtons();
 }
 
 function renderResult(isCorrect) {
@@ -307,13 +454,14 @@ function renderResult(isCorrect) {
   elements.resultLabel.className = 'result-label ' + (isCorrect ? 'correct' : 'incorrect');
 
   if (isCorrect) {
-    elements.resultDetail.innerHTML = correctLabel + '. ' + escapeHtml(correctText);
+    elements.resultDetail.innerHTML =
+      '<span class="text-correct">' + correctLabel + '. ' + escapeHtml(correctText) + '</span>';
   } else {
     var chosen = CHOICE_LABELS[state.lastAnswer];
     var chosenText = shuffled.choices[state.lastAnswer];
     elements.resultDetail.innerHTML =
-      'あなたの回答: ' + chosen + '. ' + escapeHtml(chosenText) +
-      '<br>正解: ' + correctLabel + '. ' + escapeHtml(correctText);
+      '<span class="text-incorrect">あなたの回答: ' + chosen + '. ' + escapeHtml(chosenText) + '</span>' +
+      '<br><span class="text-correct">正解: ' + correctLabel + '. ' + escapeHtml(correctText) + '</span>';
   }
 
   var isLast = state.currentIndex + 1 >= state.questions.length;
@@ -321,6 +469,7 @@ function renderResult(isCorrect) {
 }
 
 function nextQuestion() {
+  state.reviewMode = false;
   state.currentIndex += 1;
 
   if (state.currentIndex >= state.questions.length) {
@@ -330,6 +479,7 @@ function nextQuestion() {
   }
 
   state.currentSelection = 0;
+  state.resumeIndex = state.currentIndex;
   showScreen('quiz');
   renderQuiz();
 }
@@ -383,13 +533,16 @@ function handleKeydown(event) {
       else if (event.key === 'Enter') startMission(state.missionSelection + 1);
       break;
     case 'quiz':
-      if (event.key === 'Escape' || event.key === 'Backspace') goHome();
-      else if (event.key === 'ArrowUp') moveSelection(-1);
-      else if (event.key === 'ArrowDown') moveSelection(1);
-      else if (event.key === 'Enter') answerQuestion();
+      if (event.key === 'Escape' || event.key === 'Backspace') goPreviousQuestion();
+      else if (!isCurrentReview() && !isQuestionAnswered(state.currentIndex)) {
+        if (event.key === 'ArrowUp') moveSelection(-1);
+        else if (event.key === 'ArrowDown') moveSelection(1);
+        else if (event.key === 'Enter') answerQuestion();
+      }
       break;
     case 'result':
-      if (event.key === 'Enter') nextQuestion();
+      if (event.key === 'Escape' || event.key === 'Backspace') goPreviousQuestion();
+      else if (event.key === 'Enter') nextQuestion();
       break;
     case 'score':
       break;

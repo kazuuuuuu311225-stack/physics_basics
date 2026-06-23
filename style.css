@@ -254,8 +254,12 @@ body {
   box-shadow: 0 2px 10px rgba(94, 179, 246, 0.25);
 }
 
-.btn-back:active {
-  transform: scale(0.97);
+.btn-back:disabled,
+.btn-back.disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+  box-shadow: none;
 }
 
 .mission-badge {
@@ -336,6 +340,62 @@ body {
   box-shadow: 0 0 18px rgba(94, 179, 246, 0.3);
 }
 
+.choice-item.choice-correct {
+  color: var(--accent-green);
+  background: rgba(46, 204, 113, 0.18);
+  border-color: rgba(46, 204, 113, 0.65);
+  font-weight: 600;
+  cursor: default;
+  pointer-events: none;
+}
+
+.choice-item.choice-incorrect {
+  color: var(--accent-red);
+  background: rgba(231, 76, 111, 0.18);
+  border-color: rgba(231, 76, 111, 0.65);
+  font-weight: 600;
+  cursor: default;
+  pointer-events: none;
+}
+
+.choice-item.is-locked {
+  cursor: default;
+  pointer-events: none;
+}
+
+.choice-item.is-locked:not(.choice-correct):not(.choice-incorrect) {
+  opacity: 0.55;
+}
+
+.choice-item.choice-correct .choice-label,
+.choice-item.choice-incorrect .choice-label {
+  color: inherit;
+}
+
+.quiz-nav {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+}
+
+.quiz-nav .btn-back.hidden {
+  display: none;
+}
+
+.hint-review.hidden {
+  display: none;
+}
+
+.text-correct {
+  color: var(--accent-green);
+  font-weight: 600;
+}
+
+.text-incorrect {
+  color: var(--accent-red);
+  font-weight: 600;
+}
+
 .choice-item:active {
   transform: scale(0.98);
 }
@@ -349,6 +409,20 @@ body {
 
 .choice-item:not(.selected) .choice-cursor {
   visibility: hidden;
+}
+
+.choice-item.choice-correct .choice-cursor,
+.choice-item.choice-incorrect .choice-cursor,
+.choice-item.is-locked .choice-cursor {
+  visibility: hidden;
+}
+
+.choice-item.choice-correct:hover,
+.choice-item.choice-incorrect:hover,
+.choice-item.is-locked:hover {
+  background: inherit;
+  box-shadow: none;
+  transform: none;
 }
 
 .choice-label {
@@ -365,6 +439,18 @@ body {
 /* 結果画面 */
 .card-result {
   text-align: center;
+}
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.card-result .btn-back {
+  width: 100%;
+  max-width: 280px;
+  margin: 0 auto;
 }
 
 .result-icon {
