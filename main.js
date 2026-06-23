@@ -1,57 +1,104 @@
 /**
- * 物理基礎（力学）4択クイズ
+ * PHYSICS MISSION - 物理基礎クイズ（ミッション制）
  * PC: ↑↓ で選択、Enter で決定
- * スマホ/タップ: 1回目で選択、同じ選択肢を2回目で回答確定
+ * スマホ: タップで選択・決定
  */
 
-const questions = [
-  {
-    id: 1,
-    question: 'F = ma の F は何を表すか？',
-    choices: ['加速度', '質量', '速さ', '力'],
-    answer: 3,
-    explanation: 'F は力（Force）を表す。',
-  },
-  {
-    id: 2,
-    question: '重力の大きさを表す式はどれか？',
-    choices: ['F = ma', 'W = mg', 'p = F/A', 'U = kx'],
-    answer: 1,
-    explanation: '重力は W = mg で表される。',
-  },
-  {
-    id: 3,
-    question: '弾性力のフックの法則を表す式はどれか？',
-    choices: ['F = kx', 'F = ma', 'W = mg', 'p = ρgh'],
-    answer: 0,
-    explanation: '弾性力は F = kx に比例する。',
-  },
-  {
-    id: 4,
-    question: '圧力を表す式はどれか？',
-    choices: ['p = F/A', 'p = ρgh', 'F = ma', 'W = mg'],
-    answer: 0,
-    explanation: '圧力は p = F/A で表される。',
-  },
-  {
-    id: 5,
-    question: '水圧を表す式はどれか？',
-    choices: ['p = F/A', 'p = ρgh', 'F = kx', 'W = mg'],
-    answer: 1,
-    explanation: '水圧は p = ρgh で表される。',
-  },
+const mission1 = [
+  { id: 1, question: 'F = ma の F は何を表すか？',
+    choices: ['加速度', '質量', '速さ', '力'], answer: 3 },
+  { id: 2, question: '重力の大きさ W を表す式はどれか？',
+    choices: ['W = mg', 'F = ma', 'p = F/S', 'F = kx'], answer: 0 },
+  { id: 3, question: '圧力 p を表す式はどれか？',
+    choices: ['p = F/S', 'p = ρgh', 'F = ma', 'W = mg'], answer: 0 },
+  { id: 4, question: '摩擦力 F を表す式はどれか？',
+    choices: ['F = μN', 'F = ma', 'p = F/S', 'W = mg'], answer: 0 },
+  { id: 5, question: '弾性力 F = kx の k は何を表すか？',
+    choices: ['ばね定数', '密度', '圧力', '摩擦係数'], answer: 0 },
+  { id: 6, question: '加速度 a を求める式はどれか？',
+    choices: ['a = F/m', 'a = mF', 'a = v/t', 'a = S/t'], answer: 0 },
+  { id: 7, question: '質量 m を求める式はどれか？',
+    choices: ['m = F/a', 'm = a/F', 'm = v/t', 'm = ρV'], answer: 0 },
+  { id: 8, question: '力の単位はどれか？',
+    choices: ['Pa', 'N', 'J', 'kg'], answer: 1 },
+  { id: 9, question: '圧力の単位はどれか？',
+    choices: ['N', 'Pa', 'J', 'W'], answer: 1 },
+  { id: 10, question: '摩擦係数 μ は何を表すか？',
+    choices: ['力の大きさ', '滑りやすさ', '密度', '圧力'], answer: 1 },
 ];
+
+const mission2 = [
+  { id: 11, question: '水圧を表す式はどれか？',
+    choices: ['p = F/S', 'p = ρgh', 'F = kx', 'W = mg'], answer: 1 },
+  { id: 12, question: 'p = ρgh の h は何を表すか？',
+    choices: ['密度', '深さ', '重力加速度', '体積'], answer: 1 },
+  { id: 13, question: '浮力の大きさを表す式はどれか？',
+    choices: ['F = ma', 'F = kx', 'ρVg', 'p = ρgh'], answer: 2 },
+  { id: 14, question: '浮力 ρVg の V は何を表すか？',
+    choices: ['物体の体積', '押しのけた液体の体積', '密度', '圧力'], answer: 1 },
+  { id: 15, question: 'アルキメデスの原理：浮力は押しのけた液体の（　）に比例する。',
+    choices: ['密度', '体積', '深さ', '圧力'], answer: 1 },
+  { id: 16, question: 'アルキメデスの原理：浮力の式はどれか？',
+    choices: ['ρVg', 'F = ma', 'p = F/S', 'W = mg'], answer: 0 },
+  { id: 17, question: '密度 ρ の単位はどれか？',
+    choices: ['kg/m³', 'N/m²', 'm/s²', 'J/kg'], answer: 0 },
+  { id: 18, question: '水圧 p = ρgh の ρ は何を表すか？',
+    choices: ['密度', '圧力', '深さ', '重力加速度'], answer: 0 },
+  { id: 19, question: '深い場所ほど水圧が大きくなる理由は？',
+    choices: ['密度が増える', '重力が強くなる', '上の水の重さが増える', '温度が下がる'], answer: 2 },
+  { id: 20, question: '浮力が大きいほど物体はどうなるか？',
+    choices: ['沈む', '浮きやすくなる', '重くなる', '密度が上がる'], answer: 1 },
+];
+
+const mission3 = [
+  { id: 21, question: 'ニュートンの第1法則（慣性の法則）を正しく説明しているのは？',
+    choices: ['力が加わらなければ運動状態は変わらない',
+              '力は質量と加速度の積である',
+              '作用反作用の法則',
+              '物体は常に加速する'], answer: 0 },
+  { id: 22, question: 'ニュートンの第2法則を表す式はどれか？',
+    choices: ['F = ma', 'F = μN', 'p = F/S', 'W = mg'], answer: 0 },
+  { id: 23, question: 'ニュートンの第3法則（作用反作用）を正しく説明しているのは？',
+    choices: ['力が加わらなければ運動状態は変わらない',
+              '力は質量と加速度の積である',
+              '同じ大きさで反対向きの力が返ってくる',
+              '物体は常に一定の速さで運動する'], answer: 2 },
+  { id: 24, question: '力の三要素に含まれないものはどれか？',
+    choices: ['作用点', '作用線', '大きさ', '密度'], answer: 3 },
+  { id: 25, question: '力の三要素：力がどこに加わるかを示すものは？',
+    choices: ['作用点', '作用線', '大きさ', '方向'], answer: 0 },
+  { id: 26, question: '力の三要素：力の向きと一直線になる線を何という？',
+    choices: ['作用点', '作用線', '大きさ', '方向'], answer: 1 },
+  { id: 27, question: '慣性とは何か？',
+    choices: ['物体が動き続けようとする性質',
+              '物体が浮こうとする性質',
+              '摩擦が小さくなる性質',
+              '密度が変わる性質'], answer: 0 },
+  { id: 28, question: '質量が大きいほど慣性はどうなる？',
+    choices: ['大きくなる', '小さくなる', '変わらない', 'ゼロになる'], answer: 0 },
+  { id: 29, question: '作用反作用の力の大きさは？',
+    choices: ['作用の方が大きい', '反作用の方が大きい', '等しい', '比べられない'], answer: 2 },
+  { id: 30, question: 'F = ma において、加速度 a が2倍になる条件は？',
+    choices: ['F を2倍にする', 'm を2倍にする', 'F を半分にする', 'm を増やす'], answer: 0 },
+];
+
+const MISSIONS = {
+  1: { title: 'MISSION 1', subtitle: '基礎公式', questions: mission1 },
+  2: { title: 'MISSION 2', subtitle: '流体・浮力', questions: mission2 },
+  3: { title: 'MISSION 3', subtitle: '運動の三法則', questions: mission3 },
+};
 
 const CHOICE_LABELS = ['A', 'B', 'C', 'D'];
 
 const state = {
-  screen: 'title',
+  screen: 'mission',
+  missionId: 1,
+  missionSelection: 0,
   currentIndex: 0,
   currentSelection: 0,
-  awaitingConfirm: false,
-  menuAwaitingConfirm: false,
   score: 0,
   lastAnswer: null,
+  questions: [],
 };
 
 let screens;
@@ -63,41 +110,42 @@ function initApp() {
   }
 
   screens = {
-    title: document.getElementById('screenTitle'),
+    mission: document.getElementById('screenMission'),
     quiz: document.getElementById('screenQuiz'),
     result: document.getElementById('screenResult'),
     score: document.getElementById('screenScore'),
   };
 
   elements = {
-    questionCounter: document.getElementById('questionCounter'),
-    scoreDisplay: document.getElementById('scoreDisplay'),
+    missionList: document.getElementById('missionList'),
+    missionBadge: document.getElementById('missionBadge'),
+    progressText: document.getElementById('progressText'),
+    progressFill: document.getElementById('progressFill'),
     questionText: document.getElementById('questionText'),
-    choicesArea: document.getElementById('choicesArea'),
+    choicesList: document.getElementById('choicesList'),
+    resultIcon: document.getElementById('resultIcon'),
     resultLabel: document.getElementById('resultLabel'),
-    resultAnswer: document.getElementById('resultAnswer'),
-    explanationText: document.getElementById('explanationText'),
-    finalScore: document.getElementById('finalScore'),
-    scoreRank: document.getElementById('scoreRank'),
-    btnStart: document.getElementById('btnStart'),
-    btnSubmit: document.getElementById('btnSubmit'),
+    resultDetail: document.getElementById('resultDetail'),
     btnNext: document.getElementById('btnNext'),
+    scoreMissionTitle: document.getElementById('scoreMissionTitle'),
+    scoreValue: document.getElementById('scoreValue'),
+    scoreRank: document.getElementById('scoreRank'),
     btnRetry: document.getElementById('btnRetry'),
-    startItem: document.getElementById('startItem'),
-    retryItem: document.getElementById('retryItem'),
+    btnHome: document.getElementById('btnHome'),
   };
 
   document.addEventListener('keydown', handleKeydown);
 
-  elements.startItem.addEventListener('click', handleStartClick);
-  elements.btnStart.addEventListener('click', handleStartClick);
-  elements.btnSubmit.addEventListener('click', answerQuestion);
+  elements.missionList.querySelectorAll('.mission-item').forEach(function (item) {
+    item.addEventListener('click', handleMissionClick);
+  });
+
   elements.btnNext.addEventListener('click', nextQuestion);
-  elements.retryItem.addEventListener('click', handleRetryClick);
-  elements.btnRetry.addEventListener('click', handleRetryClick);
+  elements.btnRetry.addEventListener('click', retryMission);
+  elements.btnHome.addEventListener('click', goHome);
 
   document.body.focus();
-  showScreen('title');
+  showScreen('mission');
 }
 
 function showScreen(name) {
@@ -106,89 +154,73 @@ function showScreen(name) {
   });
   screens[name].classList.remove('hidden');
   state.screen = name;
-
-  if (name === 'title') {
-    resetTitleMenu();
-  } else if (name === 'score') {
-    resetRetryMenu();
-  }
 }
 
-function resetTitleMenu() {
-  state.menuAwaitingConfirm = false;
-  updateStartHighlight();
+function getMissionItems() {
+  return elements.missionList.querySelectorAll('.mission-item');
 }
 
-function resetRetryMenu() {
-  state.menuAwaitingConfirm = false;
-  updateRetryHighlight();
+function updateMissionHighlight() {
+  getMissionItems().forEach(function (item, i) {
+    item.classList.toggle('selected', i === state.missionSelection);
+  });
 }
 
-function updateStartHighlight() {
-  if (!elements.startItem) return;
-  elements.startItem.classList.add('selected');
-  elements.startItem.classList.toggle('confirm-ready', state.menuAwaitingConfirm);
-}
+function handleMissionClick(event) {
+  var item = event.currentTarget;
+  var id = parseInt(item.getAttribute('data-mission'), 10);
+  var index = id - 1;
 
-function updateRetryHighlight() {
-  if (!elements.retryItem) return;
-  elements.retryItem.classList.add('selected');
-  elements.retryItem.classList.toggle('confirm-ready', state.menuAwaitingConfirm);
-}
-
-function handleStartClick() {
-  if (state.screen !== 'title') return;
-
-  if (state.menuAwaitingConfirm) {
-    startQuiz();
+  if (state.missionSelection === index) {
+    startMission(id);
     return;
   }
 
-  state.menuAwaitingConfirm = true;
-  updateStartHighlight();
+  state.missionSelection = index;
+  updateMissionHighlight();
 }
 
-function handleRetryClick() {
-  if (state.screen !== 'score') return;
+function moveMissionSelection(delta) {
+  var count = 3;
+  state.missionSelection = (state.missionSelection + delta + count) % count;
+  updateMissionHighlight();
+}
 
-  if (state.menuAwaitingConfirm) {
-    showScreen('title');
-    return;
-  }
-
-  state.menuAwaitingConfirm = true;
-  updateRetryHighlight();
+function startMission(id) {
+  state.missionId = id;
+  state.questions = MISSIONS[id].questions;
+  state.currentIndex = 0;
+  state.currentSelection = 0;
+  state.score = 0;
+  showScreen('quiz');
+  renderQuiz();
 }
 
 function renderQuiz() {
-  var q = questions[state.currentIndex];
-  var total = questions.length;
+  var mission = MISSIONS[state.missionId];
+  var q = state.questions[state.currentIndex];
+  var total = state.questions.length;
+  var current = state.currentIndex + 1;
 
-  elements.questionCounter.textContent = 'Q.' + (state.currentIndex + 1) + '/' + total;
-  elements.scoreDisplay.textContent = 'SCORE: ' + state.score;
+  elements.missionBadge.textContent = mission.title;
+  elements.progressText.textContent = current + ' / ' + total;
+  elements.progressFill.style.width = ((current - 1) / total * 100) + '%';
   elements.questionText.textContent = q.question;
 
-  var choicesHtml = q.choices
-    .map(function (choice, i) {
-      var selected = i === state.currentSelection ? ' selected' : '';
-      var confirmReady = i === state.currentSelection && state.awaitingConfirm ? ' confirm-ready' : '';
-      return (
-        '<li class="choice-item' + selected + confirmReady + '" data-index="' + i + '">' +
-        '<span class="cursor">▶</span>' +
-        '<span class="choice-label">' + CHOICE_LABELS[i] + '.</span>' +
-        '<span class="choice-text">' + escapeHtml(choice) + '</span>' +
-        '</li>'
-      );
-    })
-    .join('');
+  var html = q.choices.map(function (choice, i) {
+    var selected = i === state.currentSelection ? ' selected' : '';
+    return (
+      '<li class="choice-item' + selected + '" data-index="' + i + '">' +
+      '<span class="choice-cursor">▶</span>' +
+      '<span class="choice-label">' + CHOICE_LABELS[i] + '.</span>' +
+      '<span class="choice-text">' + escapeHtml(choice) + '</span>' +
+      '</li>'
+    );
+  }).join('');
 
-  elements.choicesArea.innerHTML = '<ul class="choices-list">' + choicesHtml + '</ul>';
-  bindChoiceEvents();
-}
+  elements.choicesList.innerHTML = html;
 
-function bindChoiceEvents() {
-  var items = elements.choicesArea.querySelectorAll('.choice-item');
-  items.forEach(function (item) {
+  elements.choicesList.querySelectorAll('.choice-item').forEach(function (item) {
     item.addEventListener('click', handleChoiceClick);
   });
 }
@@ -199,61 +231,105 @@ function handleChoiceClick(event) {
   var index = parseInt(event.currentTarget.getAttribute('data-index'), 10);
   if (isNaN(index)) return;
 
-  if (state.currentSelection === index && state.awaitingConfirm) {
+  if (state.currentSelection === index) {
     answerQuestion();
     return;
   }
 
   state.currentSelection = index;
-  state.awaitingConfirm = true;
   updateChoiceHighlight();
 }
 
 function updateChoiceHighlight() {
-  var items = elements.choicesArea.querySelectorAll('.choice-item');
-  items.forEach(function (item, i) {
-    var isSelected = i === state.currentSelection;
-    item.classList.toggle('selected', isSelected);
-    item.classList.toggle('confirm-ready', isSelected && state.awaitingConfirm);
+  elements.choicesList.querySelectorAll('.choice-item').forEach(function (item, i) {
+    item.classList.toggle('selected', i === state.currentSelection);
   });
 }
 
+function moveSelection(delta) {
+  var count = state.questions[state.currentIndex].choices.length;
+  state.currentSelection = (state.currentSelection + delta + count) % count;
+  updateChoiceHighlight();
+}
+
+function answerQuestion() {
+  if (state.screen !== 'quiz') return;
+
+  var q = state.questions[state.currentIndex];
+  state.lastAnswer = state.currentSelection;
+  var isCorrect = state.currentSelection === q.answer;
+
+  if (isCorrect) state.score += 1;
+
+  renderResult(isCorrect);
+  showScreen('result');
+}
+
 function renderResult(isCorrect) {
-  var q = questions[state.currentIndex];
+  var q = state.questions[state.currentIndex];
   var correctLabel = CHOICE_LABELS[q.answer];
   var correctText = q.choices[q.answer];
 
+  elements.resultIcon.textContent = isCorrect ? '✓' : '✗';
+  elements.resultIcon.className = 'result-icon ' + (isCorrect ? 'correct' : 'incorrect');
   elements.resultLabel.textContent = isCorrect ? '正解！' : '不正解…';
   elements.resultLabel.className = 'result-label ' + (isCorrect ? 'correct' : 'incorrect');
 
   if (isCorrect) {
-    elements.resultAnswer.innerHTML = correctLabel + '. ' + escapeHtml(correctText);
+    elements.resultDetail.innerHTML = correctLabel + '. ' + escapeHtml(correctText);
   } else {
     var chosen = CHOICE_LABELS[state.lastAnswer];
     var chosenText = q.choices[state.lastAnswer];
-    elements.resultAnswer.innerHTML =
+    elements.resultDetail.innerHTML =
       'あなたの回答: ' + chosen + '. ' + escapeHtml(chosenText) +
       '<br>正解: ' + correctLabel + '. ' + escapeHtml(correctText);
   }
 
-  elements.explanationText.textContent = q.explanation || '';
-  elements.btnNext.textContent =
-    state.currentIndex + 1 >= questions.length ? '結果を見る' : '次の問題へ';
+  var isLast = state.currentIndex + 1 >= state.questions.length;
+  elements.btnNext.textContent = isLast ? '結果を見る' : '次の問題へ';
+}
+
+function nextQuestion() {
+  state.currentIndex += 1;
+
+  if (state.currentIndex >= state.questions.length) {
+    renderScore();
+    showScreen('score');
+    return;
+  }
+
+  state.currentSelection = 0;
+  showScreen('quiz');
+  renderQuiz();
 }
 
 function renderScore() {
-  var total = questions.length;
-  elements.finalScore.textContent = state.score + ' / ' + total;
+  var mission = MISSIONS[state.missionId];
+  var total = state.questions.length;
+
+  elements.scoreMissionTitle.textContent = mission.title + ' — ' + mission.subtitle;
+  elements.scoreValue.textContent = state.score;
   elements.scoreRank.textContent = getRankMessage(state.score, total);
+  elements.progressFill.style.width = '100%';
 }
 
 function getRankMessage(score, total) {
   var ratio = score / total;
-  if (ratio === 1) return '★ パーフェクト！ ★';
+  if (ratio === 1) return '★ パーフェクトクリア！ ★';
   if (ratio >= 0.8) return 'よくできました！';
   if (ratio >= 0.6) return 'もう少し！';
   if (ratio >= 0.4) return '復習しよう';
   return 'がんばろう！';
+}
+
+function retryMission() {
+  startMission(state.missionId);
+}
+
+function goHome() {
+  state.missionSelection = state.missionId - 1;
+  updateMissionHighlight();
+  showScreen('mission');
 }
 
 function escapeHtml(str) {
@@ -264,62 +340,16 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
-function startQuiz() {
-  state.currentIndex = 0;
-  state.currentSelection = 0;
-  state.awaitingConfirm = false;
-  state.menuAwaitingConfirm = false;
-  state.score = 0;
-  showScreen('quiz');
-  renderQuiz();
-}
-
-function answerQuestion() {
-  if (state.screen !== 'quiz') return;
-
-  var q = questions[state.currentIndex];
-  state.lastAnswer = state.currentSelection;
-  var isCorrect = state.currentSelection === q.answer;
-
-  if (isCorrect) {
-    state.score += 1;
-  }
-
-  state.awaitingConfirm = false;
-  renderResult(isCorrect);
-  showScreen('result');
-}
-
-function nextQuestion() {
-  state.currentIndex += 1;
-
-  if (state.currentIndex >= questions.length) {
-    renderScore();
-    showScreen('score');
-    return;
-  }
-
-  state.currentSelection = 0;
-  state.awaitingConfirm = false;
-  showScreen('quiz');
-  renderQuiz();
-}
-
-function moveSelection(delta) {
-  var count = questions[state.currentIndex].choices.length;
-  state.currentSelection = (state.currentSelection + delta + count) % count;
-  state.awaitingConfirm = false;
-  updateChoiceHighlight();
-}
-
 function handleKeydown(event) {
-  if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'Enter') {
+  if (['ArrowUp', 'ArrowDown', 'Enter'].includes(event.key)) {
     event.preventDefault();
   }
 
   switch (state.screen) {
-    case 'title':
-      if (event.key === 'Enter') startQuiz();
+    case 'mission':
+      if (event.key === 'ArrowUp') moveMissionSelection(-1);
+      else if (event.key === 'ArrowDown') moveMissionSelection(1);
+      else if (event.key === 'Enter') startMission(state.missionSelection + 1);
       break;
     case 'quiz':
       if (event.key === 'ArrowUp') moveSelection(-1);
@@ -330,7 +360,6 @@ function handleKeydown(event) {
       if (event.key === 'Enter') nextQuestion();
       break;
     case 'score':
-      if (event.key === 'Enter') showScreen('title');
       break;
     default:
       break;
