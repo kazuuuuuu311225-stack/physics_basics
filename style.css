@@ -226,13 +226,40 @@ body {
 
 /* クイズ画面 */
 .quiz-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
+  gap: 0.5rem;
   margin-bottom: 0.75rem;
 }
 
+.btn-back {
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(94, 179, 246, 0.35);
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.btn-back:hover {
+  color: var(--blue-dark);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 10px rgba(94, 179, 246, 0.25);
+}
+
+.btn-back:active {
+  transform: scale(0.97);
+}
+
 .mission-badge {
+  justify-self: center;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -243,6 +270,7 @@ body {
 }
 
 .progress-text {
+  justify-self: end;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-secondary);

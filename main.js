@@ -99,6 +99,7 @@ const state = {
   score: 0,
   lastAnswer: null,
   questions: [],
+  shuffledMap: [],
 };
 
 let screens;
@@ -132,6 +133,7 @@ function initApp() {
     scoreRank: document.getElementById('scoreRank'),
     btnRetry: document.getElementById('btnRetry'),
     btnHome: document.getElementById('btnHome'),
+    btnBackQuiz: document.getElementById('btnBackQuiz'),
   };
 
   document.addEventListener('keydown', handleKeydown);
@@ -143,6 +145,7 @@ function initApp() {
   elements.btnNext.addEventListener('click', nextQuestion);
   elements.btnRetry.addEventListener('click', retryMission);
   elements.btnHome.addEventListener('click', goHome);
+  elements.btnBackQuiz.addEventListener('click', goHome);
 
   document.body.focus();
   showScreen('mission');
@@ -186,9 +189,36 @@ function moveMissionSelection(delta) {
   updateMissionHighlight();
 }
 
+function shuffleChoices(choices, correctIndex) {
+  var order = choices.map(function (_, i) { return i; });
+
+  for (var i = order.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = order[i];
+    order[i] = order[j];
+    order[j] = tmp;
+  }
+
+  return {
+    choices: order.map(function (i) { return choices[i]; }),
+    answer: order.indexOf(correctIndex),
+  };
+}
+
+function buildShuffledMap(questions) {
+  return questions.map(function (q) {
+    return shuffleChoices(q.choices, q.answer);
+  });
+}
+
+function getCurrentShuffled() {
+  return state.shuffledMap[state.currentIndex];
+}
+
 function startMission(id) {
   state.missionId = id;
   state.questions = MISSIONS[id].questions;
+  state.shuffledMap = buildShuffledMap(state.questions);
   state.currentIndex = 0;
   state.currentSelection = 0;
   state.score = 0;
@@ -199,6 +229,7 @@ function startMission(id) {
 function renderQuiz() {
   var mission = MISSIONS[state.missionId];
   var q = state.questions[state.currentIndex];
+  var shuffled = getCurrentShuffled();
   var total = state.questions.length;
   var current = state.currentIndex + 1;
 
@@ -207,7 +238,7 @@ function renderQuiz() {
   elements.progressFill.style.width = ((current - 1) / total * 100) + '%';
   elements.questionText.textContent = q.question;
 
-  var html = q.choices.map(function (choice, i) {
+  var html = shuffled.choices.map(function (choice, i) {
     var selected = i === state.currentSelection ? ' selected' : '';
     return (
       '<li class="choice-item' + selected + '" data-index="' + i + '">' +
@@ -247,7 +278,7 @@ function updateChoiceHighlight() {
 }
 
 function moveSelection(delta) {
-  var count = state.questions[state.currentIndex].choices.length;
+  var count = getCurrentShuffled().choices.length;
   state.currentSelection = (state.currentSelection + delta + count) % count;
   updateChoiceHighlight();
 }
@@ -255,9 +286,9 @@ function moveSelection(delta) {
 function answerQuestion() {
   if (state.screen !== 'quiz') return;
 
-  var q = state.questions[state.currentIndex];
+  var shuffled = getCurrentShuffled();
   state.lastAnswer = state.currentSelection;
-  var isCorrect = state.currentSelection === q.answer;
+  var isCorrect = state.currentSelection === shuffled.answer;
 
   if (isCorrect) state.score += 1;
 
@@ -266,9 +297,9 @@ function answerQuestion() {
 }
 
 function renderResult(isCorrect) {
-  var q = state.questions[state.currentIndex];
-  var correctLabel = CHOICE_LABELS[q.answer];
-  var correctText = q.choices[q.answer];
+  var shuffled = getCurrentShuffled();
+  var correctLabel = CHOICE_LABELS[shuffled.answer];
+  var correctText = shuffled.choices[shuffled.answer];
 
   elements.resultIcon.textContent = isCorrect ? '✓' : '✗';
   elements.resultIcon.className = 'result-icon ' + (isCorrect ? 'correct' : 'incorrect');
@@ -279,7 +310,7 @@ function renderResult(isCorrect) {
     elements.resultDetail.innerHTML = correctLabel + '. ' + escapeHtml(correctText);
   } else {
     var chosen = CHOICE_LABELS[state.lastAnswer];
-    var chosenText = q.choices[state.lastAnswer];
+    var chosenText = shuffled.choices[state.lastAnswer];
     elements.resultDetail.innerHTML =
       'あなたの回答: ' + chosen + '. ' + escapeHtml(chosenText) +
       '<br>正解: ' + correctLabel + '. ' + escapeHtml(correctText);
@@ -341,7 +372,7 @@ function escapeHtml(str) {
 }
 
 function handleKeydown(event) {
-  if (['ArrowUp', 'ArrowDown', 'Enter'].includes(event.key)) {
+  if (['ArrowUp', 'ArrowDown', 'Enter', 'Escape', 'Backspace'].includes(event.key)) {
     event.preventDefault();
   }
 
@@ -352,7 +383,8 @@ function handleKeydown(event) {
       else if (event.key === 'Enter') startMission(state.missionSelection + 1);
       break;
     case 'quiz':
-      if (event.key === 'ArrowUp') moveSelection(-1);
+      if (event.key === 'Escape' || event.key === 'Backspace') goHome();
+      else if (event.key === 'ArrowUp') moveSelection(-1);
       else if (event.key === 'ArrowDown') moveSelection(1);
       else if (event.key === 'Enter') answerQuestion();
       break;
